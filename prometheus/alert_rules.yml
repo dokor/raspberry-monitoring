@@ -1,0 +1,83 @@
+groups:
+  - name: raspberry-health
+    rules:
+      # 1. Prometheus ne voit plus une machine (node-exporter)
+      - alert: InstanceDown
+        expr: up{job="node-exporter"} == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance {{ $labels.instance }} down"
+          description: "Prometheus n'arrive plus à joindre {{ $labels.instance }} depuis plus de 2 minutes."
+
+      # 2. CPU trop élevé
+      - alert: HighCPUUsage
+        expr: avg by (instance) (
+          rate(node_cpu_seconds_total{mode!="idle"}[5m])
+          ) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU élevé sur {{ $labels.instance }}"
+          description: "Usage CPU moyen > 85% sur 5 minutes."
+
+      # 3. RAM presque pleine
+      - alert: HighMemoryUsage
+        expr: (1 - node_memory_MemAvailable_bytes
+          / node_memory_MemTotal_bytes) * 100 > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Mémoire élevée sur {{ $labels.instance }}"
+          description: "Usage mémoire > 85% sur 5 minutes."
+
+      # 4. Disque presque plein (warning)
+      - alert: DiskUsageWarning
+        expr: |
+          (node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}
+           - node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"})
+          / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} * 100 > 80
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disque rempli à > 80% sur {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          description: "Le disque {{ $labels.device }} monté sur {{ $labels.mountpoint }} dépasse 80% d'utilisation."
+
+      # 5. Disque presque plein (critique)
+      - alert: DiskUsageCritical
+        expr: |
+          (node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}
+           - node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"})
+          / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"} * 100 > 90
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disque rempli à > 90% sur {{ $labels.instance }} ({{ $labels.mountpoint }})"
+          description: "Le disque {{ $labels.device }} monté sur {{ $labels.mountpoint }} dépasse 90% d'utilisation."
+
+  - name: docker-containers
+    rules:
+      # 6. cAdvisor ne renvoie plus rien
+      - alert: CadvisorDown
+        expr: up{job="cadvisor"} == 0
+        for: 2m
+        labels:
+          severity: warning
+        annotations:
+          summary: "cAdvisor down sur {{ $labels.instance }}"
+          description: "Prometheus ne récupère plus de métriques cAdvisor depuis 2 minutes."
+
+      # 7. Aucun conteneur vu récemment (gros truc louche)
+      - alert: NoContainersSeenRecently
+        expr: time() - max by (instance) (container_last_seen) > 300
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Plus de conteneurs vus sur {{ $labels.instance }}"
+          description: "Aucun conteneur n'a été vu par cAdvisor depuis plus de 5 minutes."

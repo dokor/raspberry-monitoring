@@ -72,6 +72,16 @@ services:
       # - "traefik.http.routers.monitoring-secure.entrypoints=websecure"
       # - "traefik.http.routers.monitoring-secure.tls.certresolver=letsencrypt"
 
+  alerter:
+    image: ultram4rine/alerter:latest
+    container_name: alerter
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      - ALERTER_LISTEN_PORT=3030
+    networks:
+      - monitoring
 volumes:
   prometheus_data:
   grafana_data:

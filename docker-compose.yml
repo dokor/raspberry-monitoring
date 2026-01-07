@@ -85,8 +85,6 @@ services:
       - "--tg"
       - "--tg-token=${ALERTER_TG_BOT_TOKEN}"
       - "--tg-chat-id=${ALERTER_TG_CHAT_ID}"
-    environment:
-      - ALERTER_LISTEN_PORT=3030
     networks:
       - monitoring
     

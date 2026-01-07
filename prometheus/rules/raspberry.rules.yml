@@ -1,0 +1,29 @@
+groups:
+  - name: raspberry-basic
+    rules:
+      - alert: InstanceDown
+        expr: up == 0
+        for: 2m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Instance down"
+          description: "Target {{ $labels.instance }} / job {{ $labels.job }} is down."
+
+      - alert: HostHighCPU
+        expr: 100 - (avg by (instance) (rate(node_cpu_seconds_total{mode="idle"}[2m])) * 100) > 85
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "CPU élevé"
+          description: "CPU > 85% sur {{ $labels.instance }} depuis 5 minutes."
+
+      - alert: HostLowDiskSpace
+        expr: (node_filesystem_avail_bytes{fstype!~"tmpfs|overlay"} / node_filesystem_size_bytes{fstype!~"tmpfs|overlay"}) * 100 < 10
+        for: 10m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Disque faible"
+          description: "Espace disque < 10% sur {{ $labels.instance }} (mount: {{ $labels.mountpoint }})."

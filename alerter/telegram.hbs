@@ -1,0 +1,16 @@
+<b>{{commonLabels.alertname}}</b>
+{{#if status}}
+\n<b>Status:</b> {{status}}
+{{/if}}
+{{#if commonLabels.severity}}
+\n<b>Severity:</b> {{commonLabels.severity}}
+{{/if}}
+{{#if commonAnnotations.summary}}
+\n<b>Summary:</b> {{commonAnnotations.summary}}
+{{/if}}
+{{#if commonAnnotations.description}}
+\n<b>Description:</b> {{commonAnnotations.description}}
+{{/if}}
+{{#if alerts}}
+\n\n<b>Alerts:</b> {{alerts.length}}
+{{/if}}

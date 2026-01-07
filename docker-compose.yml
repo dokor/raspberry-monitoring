@@ -81,13 +81,13 @@ services:
     env_file:
       - .env
     volumes:
-      - ./alerter/telegram.tmpl:/templates/telegram.tmpl:ro
+      - ./alerter/telegram.hbs:/templates/telegram.hbs:ro
     command:
       - "--port=3030"
       - "--tg"
       - "--tg-token=${ALERTER_TG_BOT_TOKEN}"
       - "--tg-chat-id=${ALERTER_TG_CHAT_ID}"
-      - "--tg-template-path=/templates/telegram.tmpl"
+      - "--tg-template-path=/templates/telegram.hbs"
     networks:
       - monitoring
     

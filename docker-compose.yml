@@ -65,8 +65,9 @@ services:
       - proxy
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.monitoring.rule=Host(`$${MONITORING_DOMAIN}`)"
+      - "traefik.http.routers.monitoring.rule=Host(`grafana.local`)"
       - "traefik.http.routers.monitoring.entrypoints=web"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
       # HTTPS si configuré dans Traefik :
       # - "traefik.http.routers.monitoring-secure.rule=Host(`$${MONITORING_DOMAIN}`)"
       # - "traefik.http.routers.monitoring-secure.entrypoints=websecure"

@@ -58,8 +58,8 @@ services:
     volumes:
       - grafana_data:/var/lib/grafana
     # Pour accéder directement sans proxy, décommente :
-    ports:
-      - "3000:3000"
+    #ports:
+    #  - "3000:3000"
     networks:
       - monitoring
       - proxy

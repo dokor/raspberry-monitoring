@@ -80,10 +80,17 @@ services:
     restart: unless-stopped
     env_file:
       - .env
+    command:
+      - "--port=3030"
+      - "--tg"
+      - "--tg-token=${ALERTER_TG_BOT_TOKEN}"
+      - "--tg-chat-id=${ALERTER_TG_CHAT_ID}"
     environment:
       - ALERTER_LISTEN_PORT=3030
     networks:
       - monitoring
+    
+
 volumes:
   prometheus_data:
   grafana_data:

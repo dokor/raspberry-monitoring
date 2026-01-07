@@ -24,6 +24,8 @@ services:
       - "--path.rootfs=/host"
     volumes:
       - /:/host:ro,rslave
+    networks:
+      - monitoring
 
   cadvisor:
     image: gcr.io/cadvisor/cadvisor:latest
